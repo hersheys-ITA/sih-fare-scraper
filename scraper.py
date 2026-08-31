@@ -1,6 +1,7 @@
 from playwright.sync_api import sync_playwright
 from datetime import datetime, timedelta
 import csv
+import os
 
 # ---- SETTINGS: your 5 routes and 5 date-windows ----
 ROUTES = [
@@ -86,12 +87,14 @@ def main():
 
         browser.close()
 
-    if all_results:
-        with open(OUTPUT_FILE, "w", newline="", encoding="utf-8") as f:
+       if all_results:
+        file_exists = os.path.isfile(OUTPUT_FILE)
+        with open(OUTPUT_FILE, "a", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=all_results[0].keys())
-            writer.writeheader()
+            if not file_exists:
+                writer.writeheader()
             writer.writerows(all_results)
-        print(f"\nSaved {len(all_results)} rows to {OUTPUT_FILE}")
+        print(f"\nAppended {len(all_results)} rows to {OUTPUT_FILE}")
     else:
         print("\nNo data collected.")
 
